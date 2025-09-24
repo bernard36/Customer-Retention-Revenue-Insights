@@ -1,7 +1,3 @@
-SELECT *
-FROM staging.geolocation
-WHERE geolocation_zip_code_prefix IS NULL OR geolocation_lat IS NULL OR geolocation_lng IS NULL
-
 -- Transfer to clean schema
 SELECT 
 	TRY_CAST(LTRIM(RTRIM(geolocation_zip_code_prefix)) AS INT) AS geolocation_zip_prefix,
@@ -14,28 +10,7 @@ FROM staging.geolocation
 
 
 
--- Identify nulls
--- Temp table to store null rows
---CREATE TABLE #NullRows_geolocation (
---	geolocation_zip_prefix INT,
---	geolocation_lat DECIMAL(10,6),
---	geolocation_lng DECIMAL(10,6),
---	geolocation_city NVARCHAR(50),
---	geolocation_state NVARCHAR(50)
---)
-
--- Select null rows dynamically with string_agg from clean.geolocation
---DECLARE @sql NVARCHAR(MAX);
-
---SELECT @sql = 
---	'INSERT INTO #NullRows_geolocation ' +
---	'SELECT * FROM [clean].[geolocation] ' + 
---    'WHERE ' + STRING_AGG('[' + COLUMN_NAME + ']  IS NULL', ' OR ') 
---FROM INFORMATION_SCHEMA.COLUMNS
---WHERE TABLE_NAME = 'geolocation' AND TABLE_SCHEMA = 'clean'
-
---EXEC sp_executesql @sql;
-
+-- Nulls
 -- Update the latitude null rows with the average latitude of the city
 WITH Avg_latitude_city AS (
 	SELECT geolocation_city, AVG(geolocation_lat) avg_lat
@@ -89,6 +64,18 @@ FROM clean.geolocation c
 JOIN Avg_longtitude_state a
 	ON c.geolocation_state = a.geolocation_state
 WHERE geolocation_lng IS NULL
+
+
+
+-- Delete Duplicates
+WITH Duplicates AS (
+	SELECT *, ROW_NUMBER() OVER (PARTITION BY geolocation_zip_prefix, geolocation_lat, geolocation_lng, geolocation_city, geolocation_state 
+		ORDER BY (SELECT NULL)) AS occurance
+	FROM clean.geolocation
+)
+DELETE FROM Duplicates WHERE occurance > 1
+
+
 
 
 
