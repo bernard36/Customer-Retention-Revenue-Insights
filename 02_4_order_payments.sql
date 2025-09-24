@@ -1,7 +1,7 @@
 SELECT TOP(10) *
 FROM staging.order_payments
 
--- Transfer to clean schema
+-- Transfer to clean schema (Trim and datatype)
 SELECT 
 	LTRIM(RTRIM(order_id)) AS order_id,
 	TRY_CAST(LTRIM(RTRIM(payment_sequential)) AS INT) AS payment_sequential,
