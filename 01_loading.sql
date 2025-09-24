@@ -14,13 +14,13 @@ DECLARE @sql NVARCHAR(150); -- Variable for staging schema sql
 DECLARE @tables TABLE (name NVARCHAR(150));
 INSERT INTO @tables (name)
 VALUES 
-    ('olist_customers_dataset'),  -- Table Names
-    ('olist_geolocation_dataset'), 
-    ('olist_order_items_dataset'), 
-    ('olist_order_payments_dataset'),
-    ('olist_order_reviews_dataset'),
-    ('olist_orders_dataset'),
-    ('olist_sellers_dataset'),
+    ('customers_dataset'),  -- Table Names
+    ('geolocation_dataset'), 
+    ('order_items_dataset'), 
+    ('order_payments_dataset'),
+    ('order_reviews_dataset'),
+    ('orders_dataset'),
+    ('sellers_dataset'),
     ('product_category_name_translation');
 
 WHILE EXISTS (SELECT * FROM @tables)
