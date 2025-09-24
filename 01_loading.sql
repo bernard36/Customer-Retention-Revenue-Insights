@@ -14,13 +14,13 @@ DECLARE @sql NVARCHAR(150); -- Variable for staging schema sql
 DECLARE @tables TABLE (name NVARCHAR(150));
 INSERT INTO @tables (name)
 VALUES 
-    ('customers_dataset'),  -- Table Names
-    ('geolocation_dataset'), 
-    ('order_items_dataset'), 
-    ('order_payments_dataset'),
-    ('order_reviews_dataset'),
-    ('orders_dataset'),
-    ('sellers_dataset'),
+    ('customers'),  -- Table Names
+    ('geolocation'), 
+    ('order_items'), 
+    ('order_payments'),
+    ('order_reviews'),
+    ('orders'),
+    ('sellers'),
     ('product_category_name_translation');
 
 WHILE EXISTS (SELECT * FROM @tables)
@@ -47,16 +47,8 @@ BEGIN
 END;
 
 
-SELECT TOP (1000) [customer_id]
-      ,[customer_unique_id]
-      ,[customer_zip_code_prefix]
-      ,[customer_city]
-      ,[customer_state]
-  FROM [CustomerRRInsight].[dbo].[olist_customers_dataset]
-
-
-ALTER SCHEMA staging TRANSFER dbo.olist_products_dataset
+ALTER SCHEMA staging TRANSFER dbo.products
 
 -- Inspect
 SELECT TOP(10) *
-FROM staging.olist_customers_dataset
+FROM staging.customers
