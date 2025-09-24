@@ -55,6 +55,8 @@ SELECT TOP (1000) [customer_id]
   FROM [CustomerRRInsight].[dbo].[olist_customers_dataset]
 
 
+ALTER SCHEMA staging TRANSFER dbo.olist_products_dataset
+
 -- Inspect
 SELECT TOP(10) *
 FROM staging.olist_customers_dataset
