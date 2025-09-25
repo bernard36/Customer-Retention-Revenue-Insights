@@ -74,6 +74,7 @@ WITH Duplicates AS (
 	FROM clean.geolocation
 )
 DELETE FROM Duplicates WHERE occurance > 1
+-- Deleted 400k + duplicates
 
 
 
