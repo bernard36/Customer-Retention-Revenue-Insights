@@ -14,5 +14,52 @@ SELECT
 INTO clean.order_reviews
 FROM staging.order_reviews
 
+-- DROP review comment, review message and review answer timestamp
+ALTER TABLE clean.order_reviews
+DROP COLUMN review_comment_title, review_comment_message,review_answer_timestamp
+
+-- Handle NUll
+DECLARE @sql NVARCHAR(MAX)
+
+SELECT @sql = 
+	' SELECT * 
+	  FROM [clean].[order_reviews] 
+	  WHERE ' + STRING_AGG('['+ COLUMN_NAME +'] IS NULL', ' OR')
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'order_reviews' AND TABLE_SCHEMA = 'clean'
+EXEC sp_executesql @sql
+
+-- Add derived talble 'review_creation_time'
+ALTER TABLE clean.order_reviews
+ADD review_creation_time TIME(0)
+
+-- Update review_creation_time
+UPDATE c
+SET c.review_creation_time = TRY_CAST(LTRIM(RTRIM(s.review_answer_timestamp)) AS TIME(0))
+FROM clean.order_reviews c
+JOIN staging.order_reviews s
+	ON s.review_score = c.review_score
+
+
+-- Cast review_creation_date to Date
+ALTER TABLE clean.order_reviews
+ALTER COLUMN review_creation_date DATE
+
 SELECT TOP(10) *
 FROM clean.order_reviews
+
+-- Duplicates
+WITH Duplicates AS (
+	SELECT *, ROW_NUMBER() OVER (PARTITION BY review_id, order_id, review_score, review_creation_date, review_creation_date 
+	ORDER BY (SELECT NULL)) AS occurance
+	FROM clean.order_reviews
+)
+SELECT *
+FROM Duplicates
+WHERE occurance > 1
+
+-- No duplicates found
+
+
+
+
