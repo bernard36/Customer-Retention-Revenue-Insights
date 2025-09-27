@@ -40,6 +40,20 @@ SET shipping_limit_time = CAST(shipping_limit_date AS TIME(0)),
 ALTER TABLE clean.order_items
 ALTER COLUMN shipping_limit_date DATE
 
+SELECT TOP(10) *
+FROM clean.order_items
+
+-- Check for duplicates
+WITH Duplicates AS (
+	SELECT *, ROW_NUMBER() OVER(PARTITION BY order_id, order_item_id, product_id, seller_id, shipping_limit_date, price, freight_value, shipping_limit_time
+	ORDER BY (SELECT NULL)) AS Occurance
+	FROM clean.order_items
+)
+SELECT * 
+FROM Duplicates
+WHERE Occurance > 1
+
+-- No Duplicate found
 
 
 
