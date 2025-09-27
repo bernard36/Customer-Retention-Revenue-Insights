@@ -9,6 +9,17 @@ INTO clean.geolocation
 FROM staging.geolocation
 
 
+-- Add full name of city derived column
+ALTER TABLE clean.geolocation
+ADD geolocation_state_full NVARCHAR(150)
+
+-- Update geolocation_state_full column
+UPDATE g
+SET g.geolocation_state_full = c.customer_state_full
+FROM clean.geolocation g
+JOIN clean.customers c
+	ON g.geolocation_state = c.customer_state
+
 
 -- Nulls
 -- Update the latitude null rows with the average latitude of the city
