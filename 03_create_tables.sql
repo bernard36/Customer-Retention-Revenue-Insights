@@ -67,11 +67,12 @@ IF NOT EXISTS ( -- Check if table exists before creating
 BEGIN 
 	CREATE TABLE analytics.dim_customers (
 		id INT IDENTITY(1,1) PRIMARY KEY, -- Customer ID surrogate key
-		customer_id INT,                  -- Natural Key
+		customer_id NVARCHAR(300),                  -- Natural Key
 		
 
 	)
 END
+
 
 -- Add geolocation_id foreign key to customer dimension
 ALTER TABLE analytics.dim_customers
