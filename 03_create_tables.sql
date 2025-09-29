@@ -5,6 +5,7 @@
 		fact_orders
 
 	Dimensions: 
+		dim_region,
 		dim_geolocation,
 		dim_customers,
 		dim_sellers,
@@ -20,6 +21,20 @@
 -- Create analytics schema: schema to hold all the facts and dimension tables
 CREATE SCHEMA analytics
 
+-- Create dim_region
+IF NOT EXISTS (
+	SELECT *
+	FROM INFORMATION_SCHEMA.COLUMNS
+	WHERE TABLE_NAME = 'dim_region' AND TABLE_SCHEMA = 'analytics'
+
+)
+BEGIN
+	CREATE TABLE analytics.dim_region (
+		id INT IDENTITY (1,1) PRIMARY KEY, -- Surrogate Key
+		city NVARCHAR(200), 
+		state NVARCHAR(150)
+	)
+END
 
 -- Create dim_geolocation
 IF NOT EXISTS (
@@ -33,11 +48,14 @@ BEGIN
 		zip_prefix INT, 
 		latitude DECIMAL(10,6),
 		longitude DECIMAL(10,6),
-		city NVARCHAR(150),
-		state NVARCHAR(150)
 
 	)
 END
+
+-- Add region forein key to geolocation dimension
+ALTER TABLE analytics.dim_geolocation
+ADD region_id INT FOREIGN KEY REFERENCES analytics.dim_region(id)
+
 
 
 -- Create dim_customers
@@ -92,6 +110,9 @@ BEGIN
 	)
 END
 
+-- Update product dim by adding seller id foreign key
+ALTER TABLE analytics.dim_products
+ADD seller_id INT FOREIGN KEY REFERENCES analytics.dim_seller(id)
 
 
 -- Create dim_product_category
@@ -177,7 +198,6 @@ BEGIN
 		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate Key
 		order_id INT, -- Natural Key
 		customer_id INT FOREIGN KEY REFERENCES analytics.dim_customers(id), -- Foreign Key
-		seller_id INT FOREIGN KEY REFERENCES analytics.dim_seller(id), -- Foreign Key
 		product_id INT FOREIGN KEY REFERENCES analytics.dim_products(id), -- Foreign Key
 		product_category INT FOREIGN KEY REFERENCES analytics.dim_product_category(id), -- Foreign Key
 		delivery_status INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id), -- Foreign Key
@@ -187,3 +207,5 @@ BEGIN
 		amount INT
 	)
 END
+
+
