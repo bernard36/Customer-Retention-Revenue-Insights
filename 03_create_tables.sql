@@ -68,10 +68,15 @@ BEGIN
 	CREATE TABLE analytics.dim_customers (
 		id INT IDENTITY(1,1) PRIMARY KEY, -- Customer ID surrogate key
 		customer_id INT,                  -- Natural Key
-		location_id INT FOREIGN KEY REFERENCES analytics.dim_geolocation(id)  -- Foreign Key for geolocation
+		
 
 	)
 END
+
+-- Add geolocation_id foreign key to customer dimension
+ALTER TABLE analytics.dim_customers
+ADD geolocation_id INT FOREIGN KEY REFERENCES analytics.dim_geolocation(id)  -- Foreign Key for geolocation
+
 
 
 
