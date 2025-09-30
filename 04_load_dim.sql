@@ -138,7 +138,7 @@ DROP TABLE #complete_dates
 -- INSERT INTO dim_date
 INSERT INTO analytics.dim_date (date_sk , day_name , full_date , month , month_name , year)
 SELECT 
-	DISTINCT FORMAT(dates,'yyyyMMdd'),
+	DISTINCT CONVERT(INT, FORMAT(dates,'yyyyMMdd')),
 	DATENAME(WEEKDAY, dates),
 	dates,
 	MONTH(dates),
