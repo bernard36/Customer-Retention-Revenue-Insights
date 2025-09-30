@@ -107,3 +107,41 @@ SELECT DISTINCT payment_type
 FROM clean.order_payments
 
 
+
+-- INSERT into dimension_date
+-- With union combine all dates to a temp table then use distinct to make unique
+
+WITH complete_dates AS (
+	SELECT shipping_limit_date AS dates -- shipping_limit dates from clean.order_items
+	FROM clean.order_items
+	UNION
+	SELECT order_purchase_date  -- order_purchase_date from clean.orders
+	FROM clean.orders
+	UNION
+	SELECT order_delivered_customer_date -- order_delivered_customer_date from clean.orders
+	FROM clean.orders
+	UNION
+	SELECT review_creation_date  -- review_creation_date from clean.order_reviews
+	FROM clean.order_reviews
+)
+SELECT DISTINCT dates
+INTO #complete_dates -- Get unique date of all the dates INTO temp table
+FROM complete_dates
+WHERE dates IS NOT NULL
+
+
+SELECT *
+FROM #complete_dates
+
+DROP TABLE #complete_dates
+
+-- INSERT INTO dim_date
+INSERT INTO analytics.dim_date (date_sk , day_name , full_date , month , month_name , year)
+SELECT 
+	DISTINCT FORMAT(dates,'yyyyMMdd'),
+	DATENAME(WEEKDAY, dates),
+	dates,
+	MONTH(dates),
+	DATENAME(MONTH, dates),
+	YEAR(dates)
+FROM #complete_dates
