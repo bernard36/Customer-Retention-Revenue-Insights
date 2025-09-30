@@ -9,8 +9,8 @@
 		dim_geolocation,
 		dim_customers,
 		dim_sellers,
-		dim_products,
 		dim_products_category,
+		dim_products,
 		dim_delivery_status,
 		dim_order_review,
 		dim_payments
@@ -103,6 +103,20 @@ ADD geolocation_id INT FOREIGN KEY REFERENCES analytics.dim_geolocation(id) -- F
 
 
 
+-- Create dim_product_category
+IF NOT EXISTS (
+	SELECT *
+	FROM INFORMATION_SCHEMA.COLUMNS
+	WHERE TABLE_NAME = 'dim_product_category' AND TABLE_SCHEMA = 'analytics'
+
+)
+BEGIN 
+	CREATE TABLE analytics.dim_product_category (
+		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate Key
+		name NVARCHAR(200)
+	)
+END
+
 -- Create dim_products
 IF NOT EXISTS (
 	SELECT *
@@ -126,21 +140,9 @@ END
 ALTER TABLE analytics.dim_products
 ADD seller_id INT FOREIGN KEY REFERENCES analytics.dim_seller(id)
 
-
--- Create dim_product_category
-IF NOT EXISTS (
-	SELECT *
-	FROM INFORMATION_SCHEMA.COLUMNS
-	WHERE TABLE_NAME = 'dim_product_category' AND TABLE_SCHEMA = 'analytics'
-
-)
-BEGIN 
-	CREATE TABLE analytics.dim_product_category (
-		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate Key
-		name NVARCHAR(200)
-	)
-END
-
+-- Update product dim by adding category id foreign key
+ALTER TABLE analytics.dim_products
+ADD category_id INT FOREIGN KEY REFERENCES analytics.dim_product_category(id)
 
 
 -- Create dim_delivery_status
@@ -211,7 +213,6 @@ BEGIN
 		order_id INT, -- Natural Key
 		customer_id INT FOREIGN KEY REFERENCES analytics.dim_customers(id), -- Foreign Key
 		product_id INT FOREIGN KEY REFERENCES analytics.dim_products(id), -- Foreign Key
-		product_category INT FOREIGN KEY REFERENCES analytics.dim_product_category(id), -- Foreign Key
 		delivery_status INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id), -- Foreign Key
 		payment_info INT FOREIGN KEY REFERENCES analytics.dim_payments(id), -- Foreign Key
 		purchase_date DATE,
@@ -219,5 +220,4 @@ BEGIN
 		amount INT
 	)
 END
-
 
