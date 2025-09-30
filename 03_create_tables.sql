@@ -112,7 +112,7 @@ IF NOT EXISTS (
 BEGIN
 	CREATE TABLE analytics.dim_products (
 		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate Key
-		product_id INT, -- Natural Key
+		product_id NVARCHAR(300), -- Natural Key
 		weight_g INT,
 		length_cm INT,
 		height_cm INT,
@@ -120,6 +120,7 @@ BEGIN
 
 	)
 END
+
 
 -- Update product dim by adding seller id foreign key
 ALTER TABLE analytics.dim_products
