@@ -100,8 +100,10 @@ FROM clean.orders
 
 
 
--- INSERT into dim_payments
-SELECT *
+-- INSERT into analytics_dim_payments_method
+-- add payment method to payment_method dimension
+INSERT INTO analytics.dim_payments_method (payment_method)
+SELECT DISTINCT payment_type
 FROM clean.order_payments
-WHERE payment_installments = 0
+
 
