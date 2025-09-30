@@ -14,6 +14,8 @@ SELECT DISTINCT geolocation_city, geolocation_state_full
 FROM clean.geolocation
 
 
+
+
 -- INSERT into analytics.dim_geolocation
 -- insert long, lat, region_id, zip_prefix into dim geolocation, region_id as foreing key from region_dimension, joining based on city and state from the region dimension table with the clean.geolocation table
 INSERT INTO analytics.dim_geolocation (latitude, longitude, region_id, zip_prefix)
@@ -21,6 +23,8 @@ SELECT DISTINCT g.geolocation_lat, g.geolocation_lng, r.id, g.geolocation_zip_pr
 FROM clean.geolocation g
 JOIN analytics.dim_region r
 	ON g.geolocation_city = r.city AND g.geolocation_state_full = r.state
+
+
 
 -- INSERT into analytics.customers
 
@@ -50,11 +54,18 @@ LEFT JOIN #region_geolocation g
 	AND c.zip_prefix = g.zip_prefix
 	
 
-SELECT *
-FROM analytics.dim_customers
 
 
 
+-- INSERT into dim_seller
+-- insert into dim_seller with the temp table region_geolocation
+INSERT INTO analytics.dim_seller (seller_id, geolocation_id)
+SELECT DISTINCT c.seller_id, g.geolocation_id
+FROM clean.sellers c
+LEFT JOIN #region_geolocation g
+	ON c.seller_zip_prefix = g.zip_prefix 
+	AND c.seller_state_full = g.state
+	AND c.seller_city = g.city
 
 
 
