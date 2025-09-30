@@ -182,7 +182,7 @@ IF NOT EXISTS (
 )
 BEGIN 
 	CREATE TABLE analytics.dim_date (
-		id INT IDENTITY (1,1) PRIMARY KEY, -- Surrogate key for date
+		date_sk INT PRIMARY KEY, -- Surrogate key for date :formate 20250930
 		full_date DATE,
 		day_name NVARCHAR(20),
 		month INT,
@@ -190,3 +190,4 @@ BEGIN
 		year INT
 	)	
 END
+
