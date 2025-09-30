@@ -12,7 +12,6 @@
 		dim_products_category,
 		dim_products,
 		dim_delivery_status,
-		dim_order_review,
 		dim_payments
 
 
@@ -160,23 +159,6 @@ BEGIN
 END
 
 
--- Create dim_order_review
-IF NOT EXISTS (
-	SELECT *
-	FROM INFORMATION_SCHEMA.COLUMNS
-	WHERE TABLE_NAME = 'dim_order_review' AND TABLE_SCHEMA = 'analytics'
-)
-BEGIN
-	CREATE TABLE dim_order_review (
-		id INT IDENTITY (1,1) PRIMARY KEY, -- Surrogate Key
-		review_id INT, -- Natural Key
-		score INT,
-		creation_date DATE,
-		creation_time TIME(0)
-	)
-END
-
-
 -- Create dim_payments
 IF NOT EXISTS (
 	SELECT *
@@ -218,7 +200,10 @@ BEGIN
 		purchase_time TIME(0),
 		amount INT,
 		delivery_date DATE,
-		delivery_time TIME(0)
+		delivery_time TIME(0),
+		order_review_score INT,
+		order_review_date DATE,
+		order_review_time TIME(0)
 	)
 END
 
