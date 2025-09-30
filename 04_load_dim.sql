@@ -15,7 +15,6 @@ FROM clean.geolocation
 
 
 
-
 -- INSERT into analytics.dim_geolocation
 -- insert long, lat, region_id, zip_prefix into dim geolocation, region_id as foreing key from region_dimension, joining based on city and state from the region dimension table with the clean.geolocation table
 INSERT INTO analytics.dim_geolocation (latitude, longitude, region_id, zip_prefix)
@@ -77,9 +76,9 @@ FROM clean.products
 
 
 -- INSERT into dim_products
--- insert into dim_products, joining seller_dim with clean.order_items and dim_category_name, to get product id, seller_id and category_id
-INSERT INTO analytics.dim_products (product_id,category_id,seller_id,height_cm,length_cm,widtht_cm,weight_g)
-SELECT DISTINCT c.product_id, cn.id, s.id, p.product_height_cm, p.product_length_cm, p.product_width_cm, p.product_weight_g
+-- insert into dim_products, joining seller_dim with clean.order_items and dim_category_name, to get product_id, price, seller_id and category_id
+INSERT INTO analytics.dim_products (product_id,category_id,seller_id, price,height_cm,length_cm,widtht_cm,weight_g)
+SELECT DISTINCT c.product_id, cn.id, s.id, c.price, p.product_height_cm, p.product_length_cm, p.product_width_cm, p.product_weight_g
 FROM clean.order_items c
 LEFT JOIN analytics.dim_seller s
 	ON c.seller_id = s.seller_id
@@ -90,6 +89,19 @@ LEFT JOIN analytics.dim_product_category cn
 
 
 
+SELECT *
+FROM analytics.dim_products
+
+-- INSERT into analytics.delivery_status
+-- from clean.orders.status
+INSERT INTO analytics.dim_delivery_status (name)
+SELECT DISTINCT order_status
+FROM clean.orders
 
 
+
+-- INSERT into dim_payments
+SELECT *
+FROM clean.order_payments
+WHERE payment_installments = 0
 
