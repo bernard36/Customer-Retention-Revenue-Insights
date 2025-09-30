@@ -68,4 +68,28 @@ LEFT JOIN #region_geolocation g
 	AND c.seller_city = g.city
 
 
+-- INSERT into dim_product_category
+-- inserted the products category name from the clean.products table
+INSERT INTO analytics.dim_product_category (name)
+SELECT DISTINCT category_name_english
+FROM clean.products
+
+
+
+-- INSERT into dim_products
+-- insert into dim_products, joining seller_dim with clean.order_items and dim_category_name, to get product id, seller_id and category_id
+INSERT INTO analytics.dim_products (product_id,category_id,seller_id,height_cm,length_cm,widtht_cm,weight_g)
+SELECT DISTINCT c.product_id, cn.id, s.id, p.product_height_cm, p.product_length_cm, p.product_width_cm, p.product_weight_g
+FROM clean.order_items c
+LEFT JOIN analytics.dim_seller s
+	ON c.seller_id = s.seller_id
+LEFT JOIN clean.products p
+	ON c.product_id = p.product_id
+LEFT JOIN analytics.dim_product_category cn
+	ON c.category_name_english = cn.name
+
+
+
+
+
 
