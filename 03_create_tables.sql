@@ -200,12 +200,15 @@ BEGIN
 		delivery_status_id INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id), -- Foreign Key
 		purchase_date DATE,
 		purchase_time TIME(0),
-		amount INT,
+		delivery_amount DECIMAL(10,2),
 		delivery_date DATE,
 		delivery_time TIME(0),
+		total_payment DECIMAL(10,2),
 		order_review_score INT,
 		order_review_date DATE,
 		order_review_time TIME(0)
 	)
 END
+
+
 
