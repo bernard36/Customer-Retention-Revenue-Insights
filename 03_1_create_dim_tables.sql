@@ -10,7 +10,8 @@
 		dim_products_category,
 		dim_products,
 		dim_delivery_status,
-		dim_payments_method
+		dim_payments_method,
+		dim_date
 
 */
 
@@ -172,3 +173,20 @@ BEGIN
 END
 
 
+
+-- Create date dimensioin
+IF NOT EXISTS (
+	SELECT *
+	FROM INFORMATION_SCHEMA.COLUMNS
+	WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'dim_date'
+)
+BEGIN 
+	CREATE TABLE analytics.dim_date (
+		id INT IDENTITY (1,1) PRIMARY KEY, -- Surrogate key for date
+		full_date DATE,
+		day_name NVARCHAR(20),
+		month INT,
+		month_name NVARCHAR(20),
+		year INT
+	)	
+END
