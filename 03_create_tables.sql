@@ -204,11 +204,10 @@ BEGIN
 		delivery_date DATE,
 		delivery_time TIME(0),
 		total_payment DECIMAL(10,2),
-		order_review_score INT,
-		order_review_date DATE,
-		order_review_time TIME(0)
+		order_review_score INT
 	)
 END
+
 
 
 
