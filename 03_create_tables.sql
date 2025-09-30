@@ -154,9 +154,8 @@ IF NOT EXISTS (
 BEGIN 
 	CREATE TABLE analytics.dim_delivery_status (
 		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate key
-		status NVARCHAR(100),
-		delivery_date DATE,
-		delivery_time TIME(0)
+		name NVARCHAR(100)
+		
 	)
 END
 
@@ -213,11 +212,13 @@ BEGIN
 		order_id INT, -- Natural Key
 		customer_id INT FOREIGN KEY REFERENCES analytics.dim_customers(id), -- Foreign Key
 		product_id INT FOREIGN KEY REFERENCES analytics.dim_products(id), -- Foreign Key
-		delivery_status INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id), -- Foreign Key
 		payment_info INT FOREIGN KEY REFERENCES analytics.dim_payments(id), -- Foreign Key
+		delivery_status_id INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id), -- Foreign Key
 		purchase_date DATE,
 		purchase_time TIME(0),
-		amount INT
+		amount INT,
+		delivery_date DATE,
+		delivery_time TIME(0)
 	)
 END
 
