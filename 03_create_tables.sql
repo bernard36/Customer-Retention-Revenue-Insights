@@ -194,19 +194,19 @@ BEGIN
 	CREATE TABLE analytics.facts_orders (
 		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate Key
 		order_id INT, -- Natural Key
-		customer_id INT FOREIGN KEY REFERENCES analytics.dim_customers(id), -- Foreign Key
-		product_id INT FOREIGN KEY REFERENCES analytics.dim_products(id), -- Foreign Key
-		delivery_status_id INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id), -- Foreign Key
-		payment_method INT FOREIGN KEY REFERENCES analytics.dim_payments_method(id), -- Foreign Key
-		purchase_date DATE,
-		purchase_time TIME(0),
-		payment_sequential INT,
-		payment_installments INT,
-		delivery_amount DECIMAL(10,2),
-		delivery_date DATE,
-		delivery_time TIME(0),
-		total_payment DECIMAL(10,2),
-		order_review_score INT
+		customer_id INT FOREIGN KEY REFERENCES analytics.dim_customers(id), -- Foreign Key for customer dimension
+		product_id INT FOREIGN KEY REFERENCES analytics.dim_products(id), -- Foreign Key for product dimension
+		delivery_status_id INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id), -- Foreign Key for delivery_status dimension
+		payment_method INT FOREIGN KEY REFERENCES analytics.dim_payments_method(id), -- Foreign Key for payment method dimension
+		purchase_date DATE, -- Date of purchase
+		purchase_time TIME(0), -- Time of purchase
+		payment_sequential INT, -- Payment sequential
+		payment_installments INT, -- Payment Installment
+		delivery_amount DECIMAL(10,2), -- Delivery amount
+		delivery_date DATE, -- Delivery date
+		delivery_time TIME(0), -- Delivery time
+		total_payment DECIMAL(10,2), -- Total Payment
+		order_review_score INT -- order_review_score
 	)
 END
 
