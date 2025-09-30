@@ -43,6 +43,20 @@ ALTER COLUMN shipping_limit_date DATE
 SELECT TOP(10) *
 FROM clean.order_items
 
+-- Add derived column of the english translation of the product category name
+ALTER TABLE clean.order_items
+ADD category_name_english NVARCHAR(300)
+
+-- Update column with the translation of the product name table
+UPDATE c
+SET c.category_name_english = t.column2
+FROM clean.order_items c
+LEFT JOIN clean.products p
+	ON c.product_id = p.product_id 
+LEFT JOIN staging.product_category_name_translation t
+	ON p.product_category_name = t.column1
+
+
 -- Check for duplicates
 WITH Duplicates AS (
 	SELECT *, ROW_NUMBER() OVER(PARTITION BY order_id, order_item_id, product_id, seller_id, shipping_limit_date, price, freight_value, shipping_limit_time
@@ -54,6 +68,10 @@ FROM Duplicates
 WHERE Occurance > 1
 
 -- No Duplicate found
+
+
+
+
 
 
 
