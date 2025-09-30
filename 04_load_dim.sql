@@ -22,6 +22,39 @@ FROM clean.geolocation g
 JOIN analytics.dim_region r
 	ON g.geolocation_city = r.city AND g.geolocation_state_full = r.state
 
+-- INSERT into analytics.customers
+
+-- Combine goelocation and region table into a temporary table for easy join into customer dimension
+SELECT g.id geolocation_id, g.zip_prefix, r.city, r.state
+INTO #region_geolocation
+FROM analytics.dim_region r
+JOIN analytics.dim_geolocation g
+	ON g.region_id = r.id
+
+-- Remove duplicate from temp table
+WITH Duplicate AS (
+	SELECT *, ROW_NUMBER() OVER (PARTITION BY zip_prefix,city,state
+			  ORDER BY (SELECT NULL)) AS occurance
+	FROM #region_geolocation
+)
+DELETE FROM Duplicate WHERE occurance > 1
+
+
+-- insert into the customer dimension with the tempo region_geolocation 
+INSERT INTO analytics.dim_customers(customer_id,geolocation_id)
+SELECT DISTINCT c.customer_unique_id, g.geolocation_id
+FROM clean.customers c
+LEFT JOIN #region_geolocation g
+	ON c.customer_city = g.city 
+	AND c.customer_state_full = g.state
+	AND c.zip_prefix = g.zip_prefix
+	
+
+SELECT *
+FROM analytics.dim_customers
+
+
+
 
 
 
