@@ -12,8 +12,7 @@
 		dim_products_category,
 		dim_products,
 		dim_delivery_status,
-		dim_payments
-
+		dim_payments_method
 
 */
 
@@ -161,20 +160,21 @@ BEGIN
 END
 
 
--- Create dim_payments
+-- Create dim_payments_method
 IF NOT EXISTS (
 	SELECT *
 	FROM INFORMATION_SCHEMA.COLUMNS
 	WHERE TABLE_NAME = 'dim_payments' AND TABLE_SCHEMA = 'analytics'
 )
 BEGIN 
-	CREATE TABLE analytics.dim_payments (
+	CREATE TABLE analytics.dim_payments_method (
 		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate Key
-		payment_sequential INT,
-		payment_type NVARCHAR(100),
-		payment_installments INT,
+		payment_method NVARCHAR(200)
 	)
 END
+
+
+
 
 
 
@@ -196,10 +196,12 @@ BEGIN
 		order_id INT, -- Natural Key
 		customer_id INT FOREIGN KEY REFERENCES analytics.dim_customers(id), -- Foreign Key
 		product_id INT FOREIGN KEY REFERENCES analytics.dim_products(id), -- Foreign Key
-		payment_info INT FOREIGN KEY REFERENCES analytics.dim_payments(id), -- Foreign Key
 		delivery_status_id INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id), -- Foreign Key
+		payment_method INT FOREIGN KEY REFERENCES analytics.dim_payments_method(id), -- Foreign Key
 		purchase_date DATE,
 		purchase_time TIME(0),
+		payment_sequential INT,
+		payment_installments INT,
 		delivery_amount DECIMAL(10,2),
 		delivery_date DATE,
 		delivery_time TIME(0),
@@ -207,7 +209,6 @@ BEGIN
 		order_review_score INT
 	)
 END
-
 
 
 
