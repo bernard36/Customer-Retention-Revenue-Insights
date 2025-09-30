@@ -21,6 +21,20 @@ FROM staging.products
 ALTER TABLE clean.products
 DROP COLUMN product_name_length, product_description_length, product_photos_qty 
 
+-- Add translation of the product category column 
+ALTER TABLE clean.products
+ADD category_name_english NVARCHAR(300)
+
+
+-- Update columns
+UPDATE p
+SET p.category_name_english = t.column2
+FROM clean.products p
+LEFT JOIN staging.product_category_name_translation t
+	ON p.product_category_name = t.column1
+
+
+
 -- Handle duplicates
 DECLARE @sql NVARCHAR(MAX)
 
