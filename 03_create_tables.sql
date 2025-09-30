@@ -91,10 +91,14 @@ BEGIN
 	CREATE TABLE analytics.dim_seller (
 			id INT IDENTITY (1,1) PRIMARY KEY, -- Surrogate Key
 			seller_id INT,					  -- Natural Key
-			location_id INT FOREIGN KEY REFERENCES analytics.dim_geolocation(id) -- Foreign key for geolocation
+			 
 	)
 	
 END
+
+-- Add foreign key of geolocation to seller dimension
+ALTER TABLE analytics.dim_seller
+ADD geolocation_id INT FOREIGN KEY REFERENCES analytics.dim_geolocation(id) -- Foreign key for geolocation
 
 
 
