@@ -25,8 +25,6 @@ JOIN analytics.dim_region r
 
 
 
--- INSERT into analytics.customers
-
 -- Combine goelocation and region table into a temporary table for easy join into customer dimension
 SELECT g.id geolocation_id, g.zip_prefix, r.city, r.state
 INTO #region_geolocation
@@ -43,14 +41,17 @@ WITH Duplicate AS (
 DELETE FROM Duplicate WHERE occurance > 1
 
 
+-- INSERT into analytics.customers
 -- insert into the customer dimension with the tempo region_geolocation 
 INSERT INTO analytics.dim_customers(customer_id,geolocation_id)
-SELECT DISTINCT c.customer_unique_id, g.geolocation_id
+SELECT DISTINCT c.customer_id, g.geolocation_id
 FROM clean.customers c
 LEFT JOIN #region_geolocation g
 	ON c.customer_city = g.city 
 	AND c.customer_state_full = g.state
 	AND c.zip_prefix = g.zip_prefix
+
+
 	
 
 

@@ -3,7 +3,7 @@ CREATE SCHEMA clean
 
 -- transfer to clean schema after casting to proper datatype and trimming
 SELECT 
-    LTRIM(RTRIM(customer_id)) AS customer_table_id,
+    LTRIM(RTRIM(customer_id)) AS customer_id,
     LTRIM(RTRIM(customer_unique_id)) AS customer_unique_id,
     CAST(LTRIM(RTRIM(customer_zip_code_prefix)) AS INT) AS zip_prefix,
     LTRIM(RTRIM(
@@ -12,6 +12,7 @@ SELECT
     LTRIM(RTRIM(UPPER(customer_state))) AS customer_state
 INTO clean.customers -- create and transfer data to clean schema from staging schema
 FROM staging.customers
+
 
 -- Check for missing values (Dynamicaly)
 DECLARE @sql NVARCHAR(MAX);
@@ -31,7 +32,7 @@ EXEC sp_executesql @sql;
 -- Duplicates
 WITH Duplicates AS (
 SELECT *,
-    ROW_NUMBER() OVER(PARTITION BY customer_table_id, customer_unique_id, zip_prefix, customer_city, customer_state 
+    ROW_NUMBER() OVER(PARTITION BY customer_id, customer_unique_id, zip_prefix, customer_city, customer_state 
     ORDER BY (SELECT NULL)
     ) AS occurance
 FROM clean.customers -- Numbers all the unique rows starting from 1, if 2, mean duplicate
