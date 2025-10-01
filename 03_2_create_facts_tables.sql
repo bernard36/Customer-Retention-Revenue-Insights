@@ -6,12 +6,15 @@
 		fact_order,
 		fact_order_items,
 		fact_payments,
-		fact_shipments
+		fact_shipments,
+		fact_review
 
 */
 
 -- FACT TABLE
 
+-- Create facts_order
+-- Stores all order at the customer level 
 IF NOT EXISTS (
 	SELECT *
 	FROM INFORMATION_SCHEMA.COLUMNS
@@ -20,55 +23,88 @@ IF NOT EXISTS (
 BEGIN 
 	CREATE TABLE analytics.facts_orders (
 		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate Key
-		order_id INT, -- Natural Key
+		order_id NVARCHAR(300), -- Natural Key
 		customer_id INT FOREIGN KEY REFERENCES analytics.dim_customers(id), -- Foreign Key for customer dimension
-		product_id INT FOREIGN KEY REFERENCES analytics.dim_products(id), -- Foreign Key for product dimension
-		delivery_status_id INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id), -- Foreign Key for delivery_status dimension
-		payment_method INT FOREIGN KEY REFERENCES analytics.dim_payments_method(id), -- Foreign Key for payment method dimension
-		purchase_date DATE, -- Date of purchase
+		purchase_date INT FOREIGN KEY REFERENCES analytics.dim_date(date_sk), -- Foreign key for date_dimension
 		purchase_time TIME(0), -- Time of purchase
-		payment_sequential INT, -- Payment sequential
-		payment_installments INT, -- Payment Installment
-		delivery_amount DECIMAL(10,2), -- Delivery amount
-		delivery_date DATE, -- Delivery date
-		delivery_time TIME(0), -- Delivery time
-		total_payment DECIMAL(10,2), -- Total Payment
-		order_review_score INT -- order_review_score
 	)
 END
 
 
-
--- Create analytics.facts_order_item
+-- Create analytics.facts_order_items
+-- Stores all orders at the product level. See each items per order
 IF NOT EXISTS (
 	SELECT *
 	FROM INFORMATION_SCHEMA.COLUMNS
 	WHERE TABLE_NAME = 'facts_order_items' AND TABLE_SCHEMA = 'analytics'
 )
 BEGIN 
-
+	CREATE TABLE analytics.facts_order_items (
+		id INT IDENTITY(1,1) PRIMARY KEY, -- Primary key of all items per order
+		order_id INT FOREIGN KEY REFERENCES analytics.facts_orders(id), -- Foreign key of order_id from fact's table
+		product_id INT FOREIGN KEY REFERENCES analytics.dim_products(id), -- Foreign key for dimension products
+		seller_id INT FOREIGN KEY REFERENCES analytics.dim_seller(id), -- Foreign key for dimension seller
+	)
 END
 
 
 -- Create analytics.facts_payments
+-- Stores all payments at the order level
 IF NOT EXISTS (
 	SELECT *
 	FROM INFORMATION_SCHEMA.COLUMNS
 	WHERE TABLE_NAME = 'facts_payments' AND TABLE_SCHEMA = 'analytics'
 )
 BEGIN 
-
+	CREATE TABLE analytics.facts_payments (
+		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate key
+		order_id INT FOREIGN KEY REFERENCES analytics.facts_orders(id), -- Foreign key to connect to facts_orders
+		payment_method INT FOREIGN KEY REFERENCES analytics.dim_payments_method(id), -- Foreign key to connect dimension payment_method table
+		payment_sequential INT,
+		payment_installment INT,
+		payment_value DECIMAL(10,2)
+	)
 END
 
 
+
+
 -- Create analytics.facts_shipments
+-- Stores all shipments at the order level
 IF NOT EXISTS (
 	SELECT *
 	FROM INFORMATION_SCHEMA.COLUMNS
 	WHERE TABLE_NAME = 'facts_shipments' AND TABLE_SCHEMA = 'analytics'
 )
 BEGIN 
+	CREATE TABLE analytics.facts_shipments (
+		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate key
+		order_id INT FOREIGN KEY REFERENCES analytics.facts_orders(id), -- Foreign key to connect to facts_orders
+		shipping_limit_date INT FOREIGN KEY REFERENCES analytics.dim_date(date_sk), -- Foreign key to connect dim_dates
+		shipping_limit_time TIME(0),
+		delivered_date INT FOREIGN KEY REFERENCES analytics.dim_date(date_sk), -- Foreign Key to connect dim_dates
+		delivered_time TIME(0),
+		order_status INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id) -- Foreign key to connect dim_delivery_status 
+	)
+END
 
+
+-- Create analytics.facts_reviews
+-- Stores all reviews at the order level
+IF NOT EXISTS (
+	SELECT *
+	FROM INFORMATION_SCHEMA.COLUMNS
+	WHERE TABLE_NAME = 'facts_reviews' AND TABLE_SCHEMA = 'analytics'
+)
+BEGIN 
+	CREATE TABLE analytics.facts_order_reviews (
+		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate key
+		order_id INT FOREIGN KEY REFERENCES analytics.facts_orders(id), -- Foreign key to connect to facts_orders
+		review_id NVARCHAR(300), -- Natural Key
+		score INT,
+		review_creation_date INT FOREIGN KEY REFERENCES analytics.dim_date(date_sk), -- Foreign Key to connect dim_dates
+		review_creation_time TIME (0)
+	)
 END
 
 
