@@ -9,7 +9,7 @@
 		dim_sellers,
 		dim_products_category,
 		dim_products,
-		dim_delivery_status,
+		dim_order_status,
 		dim_payments_method,
 		dim_payments_type,
 		dim_date
@@ -145,19 +145,26 @@ ALTER TABLE analytics.dim_products
 ADD category_id INT FOREIGN KEY REFERENCES analytics.dim_product_category(id)
 
 
--- Create dim_delivery_status
+-- Create dim_order_status
 IF NOT EXISTS (
 	SELECT *
 	FROM INFORMATION_SCHEMA.COLUMNS
-	WHERE TABLE_NAME = 'dim_delivery_status' AND TABLE_SCHEMA = 'analytics'
+	WHERE TABLE_NAME = 'dim_order_status' AND TABLE_SCHEMA = 'analytics'
 )
 BEGIN 
-	CREATE TABLE analytics.dim_delivery_status (
+	CREATE TABLE analytics.dim_order_status (
 		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate key
 		name NVARCHAR(100)
 		
 	)
 END
+
+
+
+
+SELECT *
+FROM sys.foreign_keys 
+WHERE referenced_object_id = OBJECT_ID('analytics.dim_delivery_status')
 
 
 -- Create dim_payments_method

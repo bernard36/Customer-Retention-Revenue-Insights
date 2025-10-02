@@ -28,7 +28,7 @@ BEGIN
 		customer_id INT FOREIGN KEY REFERENCES analytics.dim_customers(id), -- Foreign Key for customer dimension
 		purchase_date INT FOREIGN KEY REFERENCES analytics.dim_date(date_sk), -- Foreign key for date_dimension
 		purchase_time TIME(0), -- Time of purchase
-		order_status INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id) -- Foreign key to connect dim_delivery_status 
+		order_status INT FOREIGN KEY REFERENCES analytics.dim_order_status(id) -- Foreign key to connect dim_delivery_status 
 	)
 END
 
