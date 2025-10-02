@@ -93,9 +93,9 @@ LEFT JOIN analytics.dim_product_category cn
 SELECT *
 FROM analytics.dim_products
 
--- INSERT into analytics.delivery_status
+-- INSERT into analytics.order_status
 -- from clean.orders.status
-INSERT INTO analytics.dim_delivery_status (name)
+INSERT INTO analytics.dim_order_status (name)
 SELECT DISTINCT order_status
 FROM clean.orders
 
