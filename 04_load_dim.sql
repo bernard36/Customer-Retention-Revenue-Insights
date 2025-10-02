@@ -108,6 +108,14 @@ SELECT DISTINCT payment_type
 FROM clean.order_payments
 
 
+-- INSERT into analytics.dim_payment_type
+INSERT INTO analytics.dim_payment_type (payment_type_sk, payment_type_name, is_success, is_deferred, is_retry)
+VALUES 
+( 'full', 'full_payment', 1,0,0),
+('installment', 'installment payment', 1,1,0),
+('failed', 'failed atempt', 0, 0, 1)
+
+
 
 -- INSERT into dimension_date
 -- With union combine all dates to a temp table then use distinct to make unique
@@ -136,7 +144,7 @@ FROM #complete_dates
 
 DROP TABLE #complete_dates
 
--- INSERT INTO dim_date
+-- add to table
 INSERT INTO analytics.dim_date (date_sk , day_name , full_date , month , month_name , year)
 SELECT 
 	DISTINCT CONVERT(INT, FORMAT(dates,'yyyyMMdd')),
