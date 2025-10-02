@@ -62,6 +62,7 @@ BEGIN
 		payment_method INT FOREIGN KEY REFERENCES analytics.dim_payments_method(id), -- Foreign key to connect dimension payment_method table
 		payment_sequential INT,
 		payment_installment INT,
+		payment_type NVARCHAR(150) FOREIGN KEY REFERENCES analytics.dim_payment_type(payment_type_sk), -- Foreign key to connect dimension payment type table
 		payment_value DECIMAL(10,2)
 	)
 END
@@ -87,6 +88,7 @@ BEGIN
 		order_status INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id) -- Foreign key to connect dim_delivery_status 
 	)
 END
+
 
 
 -- Create analytics.facts_reviews
