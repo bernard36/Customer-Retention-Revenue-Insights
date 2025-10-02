@@ -11,6 +11,7 @@
 		dim_products,
 		dim_delivery_status,
 		dim_payments_method,
+		dim_payments_type,
 		dim_date
 
 */
@@ -169,6 +170,24 @@ BEGIN
 	CREATE TABLE analytics.dim_payments_method (
 		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate Key
 		payment_method NVARCHAR(200)
+	)
+END
+
+-- Create dim_payment_type
+IF NOT EXISTS (
+	SELECT *
+	FROM INFORMATION_SCHEMA.COLUMNS
+	WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'dim_payment_type' 
+
+)
+BEGIN 
+	CREATE TABLE analytics.dim_payment_type (
+		payment_type_sk NVARCHAR(150) PRIMARY KEY, -- Surrogate key of payment_type
+		payment_type_name NVARCHAR(200),
+		is_success BIT, -- Boolean (1,0) to know if payment was successful
+		is_deferred BIT, -- Bollean (1,0) to know if payment was deferred (installment)
+		is_retry BIT -- Boolean(1,0) to know if payment failed and was retried
+
 	)
 END
 
