@@ -7,6 +7,7 @@
 		fact_order_items,
 		fact_payments,
 		fact_shipments,
+		facts_delivery,
 		fact_review
 
 */
@@ -27,8 +28,10 @@ BEGIN
 		customer_id INT FOREIGN KEY REFERENCES analytics.dim_customers(id), -- Foreign Key for customer dimension
 		purchase_date INT FOREIGN KEY REFERENCES analytics.dim_date(date_sk), -- Foreign key for date_dimension
 		purchase_time TIME(0), -- Time of purchase
+		order_status INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id) -- Foreign key to connect dim_delivery_status 
 	)
 END
+
 
 
 -- Create analytics.facts_order_items
@@ -83,12 +86,25 @@ BEGIN
 		order_id INT FOREIGN KEY REFERENCES analytics.facts_orders(id), -- Foreign key to connect to facts_orders
 		shipping_limit_date INT FOREIGN KEY REFERENCES analytics.dim_date(date_sk), -- Foreign key to connect dim_dates
 		shipping_limit_time TIME(0),
-		delivered_date INT FOREIGN KEY REFERENCES analytics.dim_date(date_sk), -- Foreign Key to connect dim_dates
-		delivered_time TIME(0),
-		order_status INT FOREIGN KEY REFERENCES analytics.dim_delivery_status(id) -- Foreign key to connect dim_delivery_status 
+		freight_value DECIMAL(10,2) 
 	)
 END
 
+
+-- Create facts_delivery
+IF NOT EXISTS (
+	SELECT *
+	FROM INFORMATION_SCHEMA.COLUMNS
+	WHERE TABLE_SCHEMA = 'analytics' AND TABLE_NAME = 'facts_delivery'
+)
+BEGIN
+	CREATE TABLE analytics.facts_delivery (
+		id INT IDENTITY(1,1) PRIMARY KEY, -- Surrogate key
+		order_id INT FOREIGN KEY REFERENCES analytics.facts_orders(id), -- Foreign key to connect to facts_orders
+		delivered_date INT FOREIGN KEY REFERENCES analytics.dim_date(date_sk),  -- Foreign key to connect dim_dates
+		delivered_time TIME(0)
+	)
+END
 
 
 -- Create analytics.facts_reviews
