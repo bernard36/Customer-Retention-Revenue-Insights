@@ -7,14 +7,17 @@
 
 
 -- Insert into analytics.fact_orders
--- Join customer Id from dim_customer with order_id from clean.orders 
-INSERT INTO analytics.facts_orders (customer_id , order_id , purchase_date , purchase_time)
-SELECT	c.id, o.order_id, d.date_sk, o.order_purchase_time
+-- Join customer Id from dim_customer with order_id from clean.orders and dim_order_status for order_status
+INSERT INTO analytics.facts_orders (customer_id , order_id , purchase_date , purchase_time, order_status)
+SELECT	c.id, o.order_id, d.date_sk, o.order_purchase_time, s.id
 FROM clean.orders o
 JOIN analytics.dim_customers c
 	ON o.customer_id = c.customer_id
 JOIN analytics.dim_date d
 	ON d.full_date = o.order_purchase_date
+JOIN analytics.dim_order_status s
+	ON o.order_status = s.name
+
 
 
 -- Insert into analytics.facts_order_items
@@ -69,9 +72,66 @@ JOIN #payment_type pt
 JOIN analytics.dim_payment_type apt
 	ON pt.payment_method = apt.payment_type_sk 
 
+	
+
+
+
+-- INSERT into Fact_shipments
+-- JOIN	clean.order_items table with facts_orders and clean.orders
+INSERT INTO analytics.facts_shipments (freight_value, order_id , shipping_limit_date , shipping_limit_time)
+SELECT c.freight_value, o.id, d.date_sk, c.shipping_limit_time  
+FROM clean.order_items c
+LEFT JOIN analytics.facts_orders o
+	ON c.order_id = o.order_id
+LEFT JOIN analytics.dim_date d
+	ON c.shipping_limit_date = d.full_date
+
+
+
+-- INSERT into facts_delivery
+-- JOIN	clean.orders and fact_orders and dim_date
+INSERT INTO analytics.facts_delivery(delivered_date, order_id, delivered_time)
+SELECT d.date_sk, o.id, c.order_delivered_time
+FROM clean.orders c
+LEFT JOIN analytics.facts_orders o
+	ON c.order_id = o.order_id
+LEFT JOIN analytics.dim_date d
+	ON c.order_delivered_customer_date = d.full_date
 
 
 
 
+-- Insert facts_reviews 
+-- join with clean.order_reviews and facts_orders
+INSERT INTO analytics.facts_order_reviews (order_id , review_creation_date , review_creation_time , review_id , score)
+SELECT f.id, d.date_sk, c.review_creation_time, c.review_id, c.review_score
+FROM clean.order_reviews c
+LEFT JOIN analytics.facts_orders f
+	ON c.order_id = f.order_id
+LEFT JOIN analytics.dim_date d
+	ON c.review_creation_date = d.full_date
 
 
+-- Inspect facts_orders
+SELECT TOP(10) * 
+FROM analytics.facts_orders
+
+-- Inspect facts_order_items
+SELECT TOP(10) * 
+FROM analytics.facts_order_items
+
+-- Inspect facts_payments
+SELECT TOP(10) * 
+FROM analytics.facts_payments
+
+-- Inspect facts_shipments
+SELECT TOP(10) * 
+FROM analytics.facts_shipments
+
+-- Inspect facts_delivery
+SELECT TOP(10) * 
+FROM analytics.facts_delivery
+
+-- Inspect facts_order_reviews
+SELECT TOP(10) * 
+FROM analytics.facts_order_reviews
