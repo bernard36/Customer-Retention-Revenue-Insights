@@ -88,6 +88,16 @@ LEFT JOIN clean.products p
 LEFT JOIN analytics.dim_product_category cn
 	ON c.category_name_english = cn.name
 
+DELETE FROM analytics.dim_products
+
+-- Delete duplicate from dim_products
+WITH duplicates AS (
+	SELECT *, ROW_NUMBER () OVER ( PARTITION BY product_id
+	ORDER BY (SELECT NULL)) occurance
+	FROM analytics.dim_products
+)
+DELETE FROM duplicates WHERE occurance > 1
+
 
 
 SELECT *

@@ -25,10 +25,14 @@ JOIN analytics.dim_order_status s
 INSERT INTO analytics.facts_order_items (order_id , product_id , seller_id)
 SELECT f.id, p.id, p.seller_id
 FROM clean.order_items c
-JOIN analytics.facts_orders f
-	ON f.order_id = c.order_id
-JOIN analytics.dim_products p
+LEFT JOIN analytics.facts_orders f
+	ON c.order_id = f.order_id
+LEFT JOIN analytics.dim_products p
 	ON c.product_id = p.product_id
+LEFT JOIN analytics.dim_seller s
+	ON c.seller_id = s.seller_id
+
+
 
 
 -- Insert into analytics.facts_payments
