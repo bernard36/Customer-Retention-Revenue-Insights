@@ -1,0 +1,6 @@
+payment_method,total_payment,total_transactions,successful_payments,successful_rate
+credit_card,12542084.21,76795,76795,1
+not_defined,0,3,0,0
+debit_card,217989.79,1529,1529,1
+boleto,2869361.27,19784,19784,1
+voucher,379436.87,5775,5769,0
