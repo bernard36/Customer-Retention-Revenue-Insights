@@ -108,7 +108,7 @@ LEFT JOIN analytics.dim_date d2
 -- Product & Category Performance
 -- Analyze which products and categories bring the most sales.
 -- Analyze hieghest and lowest review for each product per category, see total_revenue and number of orders per product
-CREATE VIEW analytics.product_and_category_performance AS 
+CREATE VIEW analytics.vw_product_and_category_performance AS 
 SELECT	pc.name AS product_category,
 		p.product_id AS product_id,
 		COUNT(p.product_id) AS number_of_items,
@@ -124,6 +124,8 @@ LEFT JOIN analytics.facts_order_reviews r
 LEFT JOIN analytics.dim_product_category pc
 	ON p.category_id = pc.id
 GROUP BY pc.name, p.product_id
+
+
 
 
 
